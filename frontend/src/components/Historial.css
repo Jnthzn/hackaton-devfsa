@@ -1,0 +1,68 @@
+.historial {
+  margin-top: 40px;
+}
+
+.historial h2 {
+  font-size: 1.5rem;
+  margin: 0 0 12px;
+}
+
+.historial ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.historial-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  border-left: 8px solid #64748b;
+}
+
+.historial-verde {
+  border-color: #15803d;
+}
+.historial-amarillo {
+  border-color: #a16207;
+}
+.historial-rojo {
+  border-color: #b91c1c;
+}
+
+.historial-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: 0.95rem;
+}
+
+.historial-etiqueta {
+  font-weight: 700;
+}
+
+.historial-puntaje {
+  color: #475569;
+}
+
+.historial-top time {
+  margin-left: auto;
+  color: #64748b;
+}
+
+.historial-texto {
+  margin: 8px 0 0;
+  font-size: 1rem;
+  color: #334155;
+  word-break: break-word;
+}
+
+.historial-vacio {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 0;
+}
