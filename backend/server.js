@@ -11,6 +11,7 @@ const frontend = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
   "..",
   "frontend",
+  "dist",
 );
 
 app.set("trust proxy", 1);

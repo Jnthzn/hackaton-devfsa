@@ -31,7 +31,18 @@ function App() {
   };
 
   useEffect(() => {
-    cargarPanel();
+    let activo = true;
+    Promise.all([obtenerReportes(10), obtenerEstadisticas()])
+      .then(([r, s]) => {
+        if (activo) {
+          setReportes(r);
+          setStats(s);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      activo = false;
+    };
   }, []);
 
   const handleSubmit = async (e) => {
