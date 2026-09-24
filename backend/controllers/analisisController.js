@@ -1,5 +1,9 @@
 import { analizar, anonimizar } from "../services/analisisService.js";
-import { guardar, listar } from "../services/reportesStore.js";
+import {
+  guardar,
+  listar,
+  estadisticas,
+} from "../services/reportesStore.js";
 
 // POST /api/analisis  body: { "contenido": "texto o link a analizar" }
 const analizarContenido = async (req, res, next) => {
@@ -43,4 +47,13 @@ const listarReportes = async (req, res, next) => {
   }
 };
 
-export { analizarContenido, listarReportes };
+// GET /api/estadisticas -> resumen para el panel de la demo
+const verEstadisticas = async (req, res, next) => {
+  try {
+    res.json(await estadisticas());
+  } catch (err) {
+    next(err);
+  }
+};
+
+export { analizarContenido, listarReportes, verEstadisticas };
