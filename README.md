@@ -16,6 +16,23 @@ npm run dev            # http://localhost:3000
 npm test               # casos de calibración
 ```
 
+## Cómo correr el frontend
+
+Es una app de React con Vite que consume la API con rutas relativas (`/api/...`).
+
+```bash
+cd frontend
+npm install
+npm run dev            # http://localhost:5173, con proxy a http://localhost:3000/api
+```
+
+Para verlo todo desde un solo puerto (así queda en el deploy):
+
+```bash
+cd frontend && npm run build   # genera frontend/dist
+cd ../backend && npm start     # sirve la app en http://localhost:3000
+```
+
 ## API
 
 Base: `http://localhost:3000/api` (CORS habilitado).
@@ -59,7 +76,7 @@ Respuesta de `GET /estadisticas`:
 }
 ```
 
-El backend también sirve la carpeta `frontend/` como archivos estáticos, así que con un solo deploy la app queda disponible en `http://localhost:3000/`.
+Si existe `frontend/dist`, el backend lo sirve como estático (con fallback a `index.html` para las rutas que no empiezan con `/api/`), así que con un solo deploy la app queda disponible en `http://localhost:3000/`. En Render: build `npm install && npm run build`, start `npm start`, root directory `backend`.
 
 ## Qué detecta
 
