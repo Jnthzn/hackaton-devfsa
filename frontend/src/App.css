@@ -135,3 +135,39 @@ button:focus-visible {
     font-size: 1.8rem;
   }
 }
+/* Pestañas */
+.pestanas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pestana {
+  min-height: 52px;
+  padding: 10px 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: inherit;
+  border: 2px solid #94a3b8;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155;
+  cursor: pointer;
+}
+
+.pestana:hover {
+  border-color: #1d4ed8;
+}
+
+.pestana.activa {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
+@media (max-width: 480px) {
+  .pestana {
+    font-size: 1rem;
+  }
+}

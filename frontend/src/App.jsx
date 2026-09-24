@@ -3,6 +3,7 @@ import "./App.css";
 import MedidorRiesgo from "./components/MedidorRiesgo";
 import Estadisticas from "./components/Estadisticas";
 import Historial from "./components/Historial";
+import AnalizadorArchivo from "./components/AnalizadorArchivo";
 import {
   analizarTexto,
   obtenerReportes,
@@ -10,6 +11,7 @@ import {
 } from "./services/api";
 
 function App() {
+  const [modo, setModo] = useState("texto");
   const [texto, setTexto] = useState("");
   const [resultado, setResultado] = useState(null);
   const [cargando, setCargando] = useState(false);
@@ -69,38 +71,65 @@ function App() {
       <header className="encabezado">
         <h1>🛡️ ¿Es una estafa?</h1>
         <p className="subtitulo">
-          Pegá el mensaje o link sospechoso y te decimos si es seguro.
+          Revisá mensajes, links, archivos e imágenes antes de confiar en ellos.
         </p>
       </header>
 
       <Estadisticas stats={stats} />
 
-      <form className="formulario" onSubmit={handleSubmit}>
-        <label htmlFor="contenido">Mensaje o enlace a revisar</label>
-        <textarea
-          id="contenido"
-          rows="6"
-          placeholder="Pegá acá el mensaje o enlace..."
-          value={texto}
-          onChange={(e) => setTexto(e.target.value)}
-          required
-          maxLength={5000}
-        />
-        <button type="submit" className="btn-analizar" disabled={cargando}>
-          {cargando && <span className="spinner" aria-hidden="true" />}
-          {cargando ? "Analizando..." : "Analizar"}
+      <div className="pestanas" role="tablist" aria-label="Qué querés revisar">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={modo === "texto"}
+          className={`pestana ${modo === "texto" ? "activa" : ""}`}
+          onClick={() => setModo("texto")}
+        >
+          💬 Mensaje o link
         </button>
-      </form>
-
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-
-      <div aria-live="polite">
-        <MedidorRiesgo resultado={resultado} />
+        <button
+          type="button"
+          role="tab"
+          aria-selected={modo === "archivo"}
+          className={`pestana ${modo === "archivo" ? "activa" : ""}`}
+          onClick={() => setModo("archivo")}
+        >
+          📎 Archivo o imagen
+        </button>
       </div>
+
+      {modo === "texto" ? (
+        <>
+          <form className="formulario" onSubmit={handleSubmit}>
+            <label htmlFor="contenido">Mensaje o enlace a revisar</label>
+            <textarea
+              id="contenido"
+              rows="6"
+              placeholder="Pegá acá el mensaje o enlace..."
+              value={texto}
+              onChange={(e) => setTexto(e.target.value)}
+              required
+              maxLength={5000}
+            />
+            <button type="submit" className="btn-analizar" disabled={cargando}>
+              {cargando && <span className="spinner" aria-hidden="true" />}
+              {cargando ? "Analizando..." : "Analizar"}
+            </button>
+          </form>
+
+          {error && (
+            <p className="error" role="alert">
+              {error}
+            </p>
+          )}
+
+          <div aria-live="polite">
+            <MedidorRiesgo resultado={resultado} />
+          </div>
+        </>
+      ) : (
+        <AnalizadorArchivo />
+      )}
 
       <Historial reportes={reportes} />
     </main>

@@ -1,0 +1,86 @@
+.analizador-archivo {
+  margin-top: 20px;
+}
+
+.zona {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 16px;
+  text-align: center;
+  background: #fff;
+  border: 3px dashed #94a3b8;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.zona:hover,
+.zona-activa {
+  border-color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.zona:focus-within {
+  outline: 4px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.zona input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.zona-icono {
+  font-size: 2.2rem;
+}
+
+.zona span:last-child {
+  color: #475569;
+  font-size: 1rem;
+}
+
+.archivo-elegido {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.archivo-elegido p {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.archivo-elegido strong {
+  word-break: break-word;
+}
+
+.archivo-elegido span {
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.vista-previa {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.nota-privacidad {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  color: #475569;
+  text-align: center;
+}

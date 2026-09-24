@@ -27,6 +27,14 @@ const ICONOS = {
   oferta: "🎁",
   url: "🔗",
   combinacion: "⚠️",
+  nombre: "📛",
+  ejecutable: "💣",
+  contenido: "🧩",
+  macros: "⚙️",
+  ia: "🤖",
+  edicion: "🖌️",
+  metadatos: "🗂️",
+  medidas: "📐",
 };
 
 function armarResumen({ nivel, puntaje, motivos = [], recomendacion }) {
@@ -79,7 +87,7 @@ function MedidorRiesgo({ resultado }) {
           <h2>
             {info.emoji} {info.titulo}
           </h2>
-          <p className="frase">{info.frase}</p>
+          <p className="frase">{resultado.veredicto ?? info.frase}</p>
         </div>
       </div>
 

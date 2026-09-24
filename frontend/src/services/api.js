@@ -36,3 +36,14 @@ export function obtenerReportes(limit = 10) {
 export function obtenerEstadisticas() {
   return pedir("/estadisticas");
 }
+
+export function analizarArchivo(archivo) {
+  return pedir("/archivo", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "X-Nombre-Archivo": encodeURIComponent(archivo.name),
+    },
+    body: archivo,
+  });
+}
