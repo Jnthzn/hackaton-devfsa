@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import {
   analizarContenido,
   listarReportes,
@@ -6,7 +7,9 @@ import {
 
 const router = express.Router();
 
-router.get("/health", (req, res) => res.json({ ok: true }));
+router.get("/health", (req, res) =>
+  res.json({ ok: true, db: mongoose.connection.readyState === 1 }),
+);
 router.post("/analisis", analizarContenido);
 router.get("/reportes", listarReportes);
 

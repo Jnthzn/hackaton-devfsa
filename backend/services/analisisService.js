@@ -27,7 +27,76 @@ const DATOS_SENSIBLES = [
   "tarjeta",
   "dni",
   "pin",
+  "home banking",
+  "validar identidad",
+  "confirmar identidad",
+  "actualizar tus datos",
+  "actualizar sus datos",
+  "foto del dni",
+  "selfie con el dni",
 ];
+
+// Suplantación de identidad: "hola mamá", falso soporte, falso agente oficial
+const SUPLANTACION = [
+  "hola mama",
+  "hola papa",
+  "soy tu hijo",
+  "soy tu hija",
+  "cambie de numero",
+  "cambie el numero",
+  "este es mi nuevo numero",
+  "mi nuevo numero",
+  "se me rompio el celular",
+  "perdi el celular",
+  "soporte tecnico",
+  "servicio tecnico",
+  "soy del banco",
+  "personal del banco",
+  "asesor del banco",
+  "agente oficial",
+  "atencion al cliente",
+  "mesa de ayuda",
+  "area de seguridad",
+  "departamento de fraude",
+];
+
+// Medios de pago difíciles de recuperar o excusas para cobrar por adelantado
+const PAGO_IRREVERSIBLE = [
+  "western union",
+  "gift card",
+  "tarjeta de regalo",
+  "criptomoneda",
+  "bitcoin",
+  "usdt",
+  "tasa aduanera",
+  "pago de aduana",
+  "costo de envio",
+  "abonar el envio",
+  "reprogramar la entrega",
+  "paquete retenido",
+  "envio retenido",
+  "deposito previo",
+  "pago anticipado",
+];
+
+// Falsos trabajos e inversiones milagrosas
+const OFERTA_INCREIBLE = [
+  "trabajo remoto",
+  "ingresos extra",
+  "dinero facil",
+  "ganancia garantizada",
+  "inversion garantizada",
+  "duplica tu dinero",
+  "sin experiencia",
+  "cupos limitados",
+  "solo por hoy",
+  "trabaja desde casa",
+];
+
+// Patrones que no dependen de una palabra suelta
+const PEDIDO_DE_CODIGO =
+  /\b(pasa(me|nos)?|envia(me|nos)?|manda(me|nos)?|deci(me|nos)?|comparti(me|nos)?|reenvia(me)?|confirma(me)?)\b[^.!?]{0,40}\bcodigo\b/;
+const CODIGO_NUMERICO = /\bcodigo\b[^.!?]{0,20}\b\d{4,8}\b/;
 
 // ----- Reglas de URLs -----
 const ACORTADORES = [
@@ -42,6 +111,14 @@ const ACORTADORES = [
 ];
 const TLDS_SOSPECHOSOS = [
   "xyz",
+  "shop",
+  "store",
+  "live",
+  "fun",
+  "cyou",
+  "lol",
+  "sbs",
+  "quest",
   "top",
   "click",
   "work",
@@ -61,9 +138,38 @@ const MARCAS = {
   mercadopago: ["mercadopago.com", "mercadopago.com.ar"],
   afip: ["afip.gob.ar"],
   anses: ["anses.gob.ar"],
+  arca: ["arca.gob.ar"],
+  miargentina: ["argentina.gob.ar"],
   santander: ["santander.com.ar"],
+  galicia: ["galicia.ar", "bancogalicia.com"],
+  bbva: ["bbva.com.ar", "bbva.com"],
+  macro: ["macro.com.ar"],
+  bna: ["bna.com.ar"],
+  bancoprovincia: ["bancoprovincia.com.ar"],
+  brubank: ["brubank.com"],
+  uala: ["uala.com.ar"],
+  naranjax: ["naranjax.com"],
   correoargentino: ["correoargentino.com.ar"],
+  andreani: ["andreani.com"],
+  oca: ["oca.com.ar"],
+  whatsapp: ["whatsapp.com"],
+  instagram: ["instagram.com"],
+  netflix: ["netflix.com"],
 };
+
+// Rutas típicas de páginas falsas de login
+const RUTAS_SOSPECHOSAS = [
+  "login",
+  "ingresar",
+  "acceso",
+  "verificar",
+  "verificacion",
+  "validar",
+  "actualizar-datos",
+  "seguridad",
+  "premio",
+  "sorteo",
+];
 
 // ----- Pesos y límites (el total final se topa en 100) -----
 const PESO = {
@@ -75,9 +181,50 @@ const PESO = {
   marca: 30,
   http: 10,
   ip: 20,
+  punycode: 25,
+  guiones: 10,
+  ruta: 10,
+  credenciales: 20,
+  suplantacion: 25,
+  pago: 15,
+  oferta: 10,
+  codigo: 35, // pedir el código de verificación es de las señales más fuertes
+  estilo: 5,
 };
-const TOPE = { urgencia: 30, dato: 45, url: 60 };
-const BONUS_COMBINACION = 10; // urgencia + pedido de datos = patrón clásico de estafa
+const TOPE = {
+  urgencia: 30,
+  dato: 45,
+  url: 60,
+  suplantacion: 50,
+  pago: 30,
+  oferta: 30,
+  estilo: 10,
+};
+
+// Combinaciones que, juntas, arman el guion clásico de una estafa
+const BONUS_COMBINACION = 10;
+const TOPE_BONUS = 20;
+const COMBINACIONES = [
+  {
+    partes: ["urgencia", "datos"],
+    detalle:
+      "Combina presión de tiempo con pedido de datos: patrón típico de estafa",
+  },
+  {
+    partes: ["suplantacion", "datos"],
+    detalle:
+      "Dice ser alguien conocido u oficial y además pide datos privados",
+  },
+  {
+    partes: ["suplantacion", "pago"],
+    detalle:
+      "Dice ser alguien conocido u oficial y pide un pago difícil de recuperar",
+  },
+  {
+    partes: ["oferta", "pago"],
+    detalle: "Promete una ganancia fácil pero primero te pide pagar",
+  },
+];
 
 const CONSEJOS = {
   urgencia:
@@ -85,6 +232,11 @@ const CONSEJOS = {
   datos:
     "Ningún banco ni servicio serio te pedirá clave, token o CBU por mensaje.",
   url: "No toques enlaces sospechosos: escribí vos la dirección oficial en el navegador.",
+  suplantacion:
+    "Si alguien dice ser un familiar o el banco, cortá y llamá vos al número que ya tenías guardado.",
+  pago: "Desconfiá de pagos por cripto, gift cards o transferencias urgentes: no se pueden recuperar.",
+  oferta:
+    "Si la ganancia parece demasiado buena para ser cierta, casi siempre es una estafa.",
 };
 
 const RECOMENDACION = {
@@ -179,7 +331,8 @@ function analizarUrl(raw) {
     });
   }
 
-  const hostLeet = deLeet(host);
+  // Se quitan guiones y puntos para que "mercado-pago.seguro.com" también coincida
+  const hostLeet = deLeet(host).replace(/[^a-z0-9]/g, "");
   for (const [marca, oficiales] of Object.entries(MARCAS)) {
     const esOficial = oficiales.some(
       (d) => host === d || host.endsWith(`.${d}`),
@@ -191,6 +344,34 @@ function analizarUrl(raw) {
       });
       break;
     }
+  }
+
+  if (host.includes("xn--")) {
+    hallazgos.push({
+      detalle:
+        "El dominio usa caracteres especiales para parecerse a otro (ataque homógrafo)",
+      puntos: PESO.punycode,
+    });
+  }
+  if ((etiqueta.match(/-/g) || []).length >= 3) {
+    hallazgos.push({
+      detalle: `El dominio encadena muchas palabras con guiones (${host})`,
+      puntos: PESO.guiones,
+    });
+  }
+  if (url.username) {
+    hallazgos.push({
+      detalle: "El enlace esconde el destino real usando el símbolo @",
+      puntos: PESO.credenciales,
+    });
+  }
+  const ruta = url.pathname.toLowerCase();
+  const rutaSospechosa = RUTAS_SOSPECHOSAS.find((r) => ruta.includes(r));
+  if (rutaSospechosa) {
+    hallazgos.push({
+      detalle: `La dirección apunta a una página de "${rutaSospechosa}", típica de sitios falsos`,
+      puntos: PESO.ruta,
+    });
   }
 
   if (/^http:\/\//i.test(raw)) {
@@ -224,7 +405,7 @@ function analizar(contenido) {
 
   // 2) Datos sensibles
   const datos = buscarTerminos(texto, DATOS_SENSIBLES);
-  const ptsDatos = Math.min(datos.length * PESO.dato, TOPE.dato);
+  let ptsDatos = Math.min(datos.length * PESO.dato, TOPE.dato);
   if (datos.length) {
     categorias.add("datos");
     motivos.push({
@@ -232,8 +413,54 @@ function analizar(contenido) {
       detalle: `Menciona datos sensibles: ${datos.join(", ")}`,
     });
   }
+  // Pedido del código de verificación: no siempre aparece una palabra de la lista
+  if (PEDIDO_DE_CODIGO.test(texto) || CODIGO_NUMERICO.test(texto)) {
+    ptsDatos = Math.min(ptsDatos + PESO.codigo, TOPE.dato);
+    categorias.add("datos");
+    motivos.push({
+      categoria: "datos",
+      detalle:
+        "Pide que compartas un código de verificación: ese código es la llave de tu cuenta",
+    });
+  }
 
-  // 3) URLs
+  // 3) Suplantación de identidad (familiar, banco, soporte)
+  const supl = buscarTerminos(texto, SUPLANTACION);
+  const ptsSuplantacion = Math.min(
+    supl.length * PESO.suplantacion,
+    TOPE.suplantacion,
+  );
+  if (supl.length) {
+    categorias.add("suplantacion");
+    motivos.push({
+      categoria: "suplantacion",
+      detalle: `Dice ser alguien de confianza o una entidad oficial: ${supl.join(", ")}`,
+    });
+  }
+
+  // 4) Pagos difíciles de recuperar
+  const pagos = buscarTerminos(texto, PAGO_IRREVERSIBLE);
+  const ptsPago = Math.min(pagos.length * PESO.pago, TOPE.pago);
+  if (pagos.length) {
+    categorias.add("pago");
+    motivos.push({
+      categoria: "pago",
+      detalle: `Pide un pago por una vía difícil de recuperar: ${pagos.join(", ")}`,
+    });
+  }
+
+  // 5) Ofertas demasiado buenas
+  const ofertas = buscarTerminos(texto, OFERTA_INCREIBLE);
+  const ptsOferta = Math.min(ofertas.length * PESO.oferta, TOPE.oferta);
+  if (ofertas.length) {
+    categorias.add("oferta");
+    motivos.push({
+      categoria: "oferta",
+      detalle: `Promete ganancias fáciles o poco realistas: ${ofertas.join(", ")}`,
+    });
+  }
+
+  // 6) URLs
   const urls = extraerUrls(contenido);
   let ptsUrl = 0;
   for (const u of urls) {
@@ -245,18 +472,50 @@ function analizar(contenido) {
   }
   ptsUrl = Math.min(ptsUrl, TOPE.url);
 
-  // 4) Combinación clásica
-  let bonus = 0;
-  if (urg.length && datos.length) {
-    bonus = BONUS_COMBINACION;
+  // 7) Señales de estilo: gritos y signos repetidos para meter presión
+  let ptsEstilo = 0;
+  const letras = contenido.replace(/[^a-zA-ZÀ-ÿ]/g, "");
+  const mayusculas = contenido.replace(/[^A-ZÁÉÍÓÚÑ]/g, "");
+  if (letras.length >= 25 && mayusculas.length / letras.length > 0.6) {
+    ptsEstilo += PESO.estilo;
+    categorias.add("urgencia");
     motivos.push({
-      categoria: "combinacion",
-      detalle:
-        "Combina presión de tiempo con pedido de datos: patrón típico de estafa",
+      categoria: "urgencia",
+      detalle: "Está escrito casi todo en mayúsculas, como para meter presión",
     });
   }
+  if (/[!?¡¿]{3,}/.test(contenido)) {
+    ptsEstilo += PESO.estilo;
+    categorias.add("urgencia");
+    motivos.push({
+      categoria: "urgencia",
+      detalle: "Abusa de signos de exclamación o pregunta para llamar la atención",
+    });
+  }
+  ptsEstilo = Math.min(ptsEstilo, TOPE.estilo);
 
-  const puntaje = Math.min(100, ptsUrgencia + ptsDatos + ptsUrl + bonus);
+  // 8) Combinaciones clásicas
+  let bonus = 0;
+  for (const combo of COMBINACIONES) {
+    if (bonus >= TOPE_BONUS) break;
+    if (combo.partes.every((p) => categorias.has(p))) {
+      bonus += BONUS_COMBINACION;
+      motivos.push({ categoria: "combinacion", detalle: combo.detalle });
+    }
+  }
+  bonus = Math.min(bonus, TOPE_BONUS);
+
+  const puntaje = Math.min(
+    100,
+    ptsUrgencia +
+      ptsDatos +
+      ptsSuplantacion +
+      ptsPago +
+      ptsOferta +
+      ptsUrl +
+      ptsEstilo +
+      bonus,
+  );
   const nivel = nivelPorPuntaje(puntaje);
   const esSoloUrl =
     urls.length === 1 && contenido.trim().split(/\s+/).length === 1;
