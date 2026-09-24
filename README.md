@@ -25,6 +25,7 @@ Base: `http://localhost:3000/api` (CORS habilitado).
 | GET | `/health` | `{ "ok": true, "db": true }` (`db` indica si hay MongoDB conectado) |
 | POST | `/analisis` | Analiza `{ "contenido": "texto o link" }` (string, máximo 5000 caracteres) |
 | GET | `/reportes?limit=10` | Historial de análisis, del más nuevo al más viejo (máximo 50) |
+| GET | `/estadisticas` | Resumen del historial: total, conteo por nivel, puntaje promedio y categorías más frecuentes |
 
 Respuesta de `POST /analisis`:
 
@@ -45,7 +46,20 @@ Respuesta de `POST /analisis`:
 - `nivel`: `verde`, `amarillo` o `rojo`.
 - `categoria` de cada motivo: `urgencia`, `datos`, `suplantacion`, `pago`, `oferta`, `url` o `combinacion`.
 - `motivos` y `consejos` pueden venir vacíos (caso verde).
-- Errores: `400` si falta `contenido` o es muy largo, `500` ante un error interno.
+- Errores: `400` si falta `contenido`, es muy largo o el JSON es inválido; `429` si se superan 30 análisis por minuto desde la misma IP; `500` ante un error interno.
+
+Respuesta de `GET /estadisticas`:
+
+```json
+{
+  "total": 12,
+  "porNivel": { "verde": 5, "amarillo": 3, "rojo": 4 },
+  "puntajePromedio": 41,
+  "categoriasFrecuentes": [{ "categoria": "urgencia", "cantidad": 7 }]
+}
+```
+
+El backend también sirve la carpeta `frontend/` como archivos estáticos, así que con un solo deploy la app queda disponible en `http://localhost:3000/`.
 
 ## Qué detecta
 

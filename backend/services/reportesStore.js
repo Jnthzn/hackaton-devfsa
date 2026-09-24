@@ -30,4 +30,36 @@ const listar = async (limit) => {
   return enMemoria.slice(0, limit);
 };
 
-export { guardar, listar };
+const resumir = (reportes) => {
+  const porNivel = { verde: 0, amarillo: 0, rojo: 0 };
+  const porCategoria = {};
+  let sumaPuntajes = 0;
+
+  for (const reporte of reportes) {
+    porNivel[reporte.nivel] = (porNivel[reporte.nivel] || 0) + 1;
+    sumaPuntajes += reporte.puntaje;
+    for (const motivo of reporte.motivos || []) {
+      porCategoria[motivo.categoria] = (porCategoria[motivo.categoria] || 0) + 1;
+    }
+  }
+
+  const total = reportes.length;
+  return {
+    total,
+    porNivel,
+    puntajePromedio: total ? Math.round(sumaPuntajes / total) : 0,
+    categoriasFrecuentes: Object.entries(porCategoria)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([categoria, cantidad]) => ({ categoria, cantidad })),
+  };
+};
+
+const estadisticas = async () => {
+  const reportes = hayMongo()
+    ? await Reporte.find().select("nivel puntaje motivos").lean()
+    : enMemoria;
+  return resumir(reportes);
+};
+
+export { guardar, listar, estadisticas, resumir };
