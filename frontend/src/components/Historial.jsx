@@ -1,0 +1,51 @@
+import "./Historial.css";
+
+const ETIQUETAS = {
+  verde: "✅ Seguro",
+  amarillo: "⚠️ Sospechoso",
+  rojo: "🚨 Peligro",
+};
+
+function formatearFecha(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleString("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
+function Historial({ reportes }) {
+  return (
+    <section className="historial">
+      <h2>Últimos análisis de la comunidad</h2>
+
+      {reportes.length === 0 ? (
+        <p className="historial-vacio">
+          Todavía no hay análisis. ¡Hacé el primero!
+        </p>
+      ) : (
+        <ul>
+          {reportes.map((r, i) => (
+            <li
+              key={r._id ?? i}
+              className={`historial-item historial-${r.nivel}`}
+            >
+              <div className="historial-top">
+                <span className="historial-etiqueta">
+                  {ETIQUETAS[r.nivel] ?? r.nivel}
+                </span>
+                <span className="historial-puntaje">{r.puntaje}/100</span>
+                <time dateTime={r.createdAt}>
+                  {formatearFecha(r.createdAt)}
+                </time>
+              </div>
+              <p className="historial-texto">{r.contenido}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+export default Historial;

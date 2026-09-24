@@ -1,0 +1,51 @@
+.estadisticas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stat {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-align: center;
+  border-bottom: 5px solid #64748b;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1.7rem;
+  line-height: 1.1;
+}
+
+.stat span {
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.stat-total {
+  border-color: #1d4ed8;
+}
+.stat-rojo {
+  border-color: #b91c1c;
+}
+.stat-amarillo {
+  border-color: #a16207;
+}
+.stat-verde {
+  border-color: #15803d;
+}
+
+.stat-top {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+  color: #334155;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .estadisticas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

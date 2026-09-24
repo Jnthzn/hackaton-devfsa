@@ -1,0 +1,136 @@
+.medidor {
+  --color: #a16207;
+  --fondo: #fef9c3;
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--fondo);
+  border: 3px solid var(--color);
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.medidor-verde {
+  --color: #15803d;
+  --fondo: #dcfce7;
+}
+
+.medidor-amarillo {
+  --color: #a16207;
+  --fondo: #fef9c3;
+}
+
+.medidor-rojo {
+  --color: #b91c1c;
+  --fondo: #fee2e2;
+}
+
+.medidor-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.puntaje-circulo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(var(--color) var(--pct), #ffffff99 0);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.puntaje-interior {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.puntaje-interior strong {
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color);
+}
+
+.puntaje-interior span {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.medidor h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--color);
+}
+
+.medidor .frase {
+  margin: 4px 0 0;
+  font-weight: 600;
+}
+
+.medidor h3 {
+  margin: 20px 0 8px;
+  font-size: 1.2rem;
+}
+
+.motivos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.motivos li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.motivo-icono {
+  font-size: 1.5rem;
+}
+
+.sin-motivos {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 0;
+}
+
+.recomendacion {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--color);
+  color: #fff;
+  border-radius: 12px;
+}
+
+.recomendacion strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.recomendacion p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.consejos ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.consejos li {
+  margin-bottom: 6px;
+}
