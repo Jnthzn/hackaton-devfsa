@@ -1,68 +1,76 @@
-.historial {
-  margin-top: 40px;
-}
-
 .historial h2 {
-  font-size: 1.5rem;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .historial ul {
   list-style: none;
-  padding: 0;
   margin: 0;
-  display: grid;
-  gap: 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historial-vacio {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secundario);
 }
 
 .historial-item {
-  background: #fff;
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   padding: 12px 14px;
-  border-left: 8px solid #64748b;
-}
-
-.historial-verde {
-  border-color: #15803d;
-}
-.historial-amarillo {
-  border-color: #a16207;
-}
-.historial-rojo {
-  border-color: #b91c1c;
+  border-radius: var(--radio-chico);
+  border-left: 3px solid var(--color-nivel);
+  background: var(--paper);
 }
 
 .historial-top {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 4px 12px;
-  font-size: 0.95rem;
+  gap: 10px;
+  font-size: 0.8rem;
 }
 
 .historial-etiqueta {
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+  color: var(--color-nivel);
 }
 
 .historial-puntaje {
-  color: #475569;
+  color: var(--text-secundario);
 }
 
 .historial-top time {
   margin-left: auto;
-  color: #64748b;
+  color: var(--text-suave);
 }
 
 .historial-texto {
-  margin: 8px 0 0;
-  font-size: 1rem;
-  color: #334155;
-  word-break: break-word;
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.historial-vacio {
-  background: #fff;
-  border-radius: 12px;
-  padding: 14px;
-  margin: 0;
+.historial-verde {
+  --color-nivel: var(--seguro);
+}
+
+.historial-amarillo {
+  --color-nivel: var(--sospechoso);
+}
+
+.historial-rojo {
+  --color-nivel: var(--peligro);
 }

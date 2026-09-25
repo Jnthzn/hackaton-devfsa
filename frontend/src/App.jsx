@@ -5,6 +5,13 @@ import Estadisticas from "./components/Estadisticas";
 import Historial from "./components/Historial";
 import AnalizadorArchivo from "./components/AnalizadorArchivo";
 import {
+  IconShieldCheck,
+  IconMessageCircle,
+  IconQrcode,
+  IconVolume2,
+  IconLink,
+} from "./components/icons";
+import {
   analizarTexto,
   obtenerReportes,
   obtenerEstadisticas,
@@ -27,9 +34,7 @@ function App() {
       ]);
       setReportes(r);
       setStats(s);
-    } catch {
-      // Si falla el historial no rompemos la pantalla
-    }
+    } catch {}
   };
 
   useEffect(() => {
@@ -66,73 +71,160 @@ function App() {
     }
   };
 
+  const handleEscucharAlerta = () => {
+    if (!resultado) return;
+    if (!("speechSynthesis" in window)) {
+      alert("Tu navegador no soporta lectura por voz");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    let listaMotivos = [];
+    if (Array.isArray(resultado.motivos)) {
+      listaMotivos = resultado.motivos.map((m) =>
+        typeof m === "object"
+          ? m.descripcion || m.motivo || m.texto || JSON.stringify(m)
+          : m,
+      );
+    } else if (typeof resultado.motivos === "string") {
+      listaMotivos = [resultado.motivos];
+    }
+
+    const motivosTexto = listaMotivos
+      .join(". ")
+      .replace(/https?:\/\/[^\s]+/gi, "un enlace sospechoso")
+      .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.]/g, "");
+
+    const mensaje = `Resultado del análisis: Nivel de riesgo ${resultado.nivel || ""}. ${motivosTexto}`;
+
+    const locucion = new SpeechSynthesisUtterance(mensaje);
+    locucion.lang = "es-AR";
+    locucion.rate = 0.9;
+
+    const voces = window.speechSynthesis.getVoices();
+    const vozEspanol = voces.find((v) => v.lang.startsWith("es"));
+    if (vozEspanol) locucion.voice = vozEspanol;
+
+    window.speechSynthesis.speak(locucion);
+  };
+
   return (
-    <main className="contenedor">
-      <header className="encabezado">
-        <h1>🛡️ ¿Es una estafa?</h1>
-        <p className="subtitulo">
-          Revisá mensajes, links, archivos e imágenes antes de confiar en ellos.
-        </p>
-      </header>
+    <div className="layout-app">
+      <div className="contenedor-ancho">
+        <header className="hero-section">
+          <span className="hero-badge">
+            <IconShieldCheck size={15} />
+            Hackathon 2026 · Ciberseguridad familiar
+          </span>
+          <h1 className="hero-titulo">
+            Detectá estafas y phishing al instante
+          </h1>
+          <p className="hero-subtitulo">
+            Protegé a tu familia analizando mensajes, enlaces acortados y
+            códigos QR sospechosos antes de hacer clic.
+          </p>
+        </header>
 
-      <Estadisticas stats={stats} />
+        <div className="panel-dos-columnas">
+          <div className="columna-izquierda">
+            <div className="pestanas" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={modo === "texto"}
+                className={`pestana ${modo === "texto" ? "activa" : ""}`}
+                onClick={() => setModo("texto")}
+              >
+                <IconMessageCircle size={16} />
+                Mensaje o link
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={modo === "archivo"}
+                className={`pestana ${modo === "archivo" ? "activa" : ""}`}
+                onClick={() => setModo("archivo")}
+              >
+                <IconQrcode size={16} />
+                Código QR o archivo
+              </button>
+            </div>
 
-      <div className="pestanas" role="tablist" aria-label="Qué querés revisar">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={modo === "texto"}
-          className={`pestana ${modo === "texto" ? "activa" : ""}`}
-          onClick={() => setModo("texto")}
-        >
-          💬 Mensaje o link
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={modo === "archivo"}
-          className={`pestana ${modo === "archivo" ? "activa" : ""}`}
-          onClick={() => setModo("archivo")}
-        >
-          📎 Archivo o imagen
-        </button>
-      </div>
+            <div className="card-input-principal">
+              {modo === "texto" ? (
+                <form className="formulario" onSubmit={handleSubmit}>
+                  <label htmlFor="contenido">Mensaje o enlace a analizar</label>
+                  <textarea
+                    id="contenido"
+                    rows="5"
+                    placeholder="Pegá acá el texto, SMS, mail o enlace sospechoso..."
+                    value={texto}
+                    onChange={(e) => setTexto(e.target.value)}
+                    required
+                    maxLength={5000}
+                  />
+                  <button
+                    type="submit"
+                    className="btn-analizar"
+                    disabled={cargando}
+                  >
+                    {cargando && (
+                      <span className="spinner" aria-hidden="true" />
+                    )}
+                    {cargando ? "Analizando..." : "Analizar riesgo"}
+                  </button>
+                </form>
+              ) : (
+                <AnalizadorArchivo />
+              )}
+              {error && (
+                <p className="error" role="alert">
+                  {error}
+                </p>
+              )}
+            </div>
 
-      {modo === "texto" ? (
-        <>
-          <form className="formulario" onSubmit={handleSubmit}>
-            <label htmlFor="contenido">Mensaje o enlace a revisar</label>
-            <textarea
-              id="contenido"
-              rows="6"
-              placeholder="Pegá acá el mensaje o enlace..."
-              value={texto}
-              onChange={(e) => setTexto(e.target.value)}
-              required
-              maxLength={5000}
-            />
-            <button type="submit" className="btn-analizar" disabled={cargando}>
-              {cargando && <span className="spinner" aria-hidden="true" />}
-              {cargando ? "Analizando..." : "Analizar"}
-            </button>
-          </form>
-
-          {error && (
-            <p className="error" role="alert">
-              {error}
-            </p>
-          )}
-
-          <div aria-live="polite">
-            <MedidorRiesgo resultado={resultado} />
+            <div className="contenedor-stats-2x2">
+              <Estadisticas stats={stats} />
+            </div>
           </div>
-        </>
-      ) : (
-        <AnalizadorArchivo />
-      )}
 
-      <Historial reportes={reportes} />
-    </main>
+          <div className="columna-derecha">
+            <div className="card-resultado-gauge">
+              <MedidorRiesgo resultado={resultado} />
+
+              {resultado?.urlReal && (
+                <div className="alerta-desenmascarar">
+                  <IconLink size={16} />
+                  <span>
+                    <strong>Link real:</strong>{" "}
+                    <span className="url-destilada">{resultado.urlReal}</span>
+                  </span>
+                </div>
+              )}
+
+              {resultado && (
+                <div className="acciones-resultado">
+                  <button
+                    type="button"
+                    className="btn-audio"
+                    onClick={handleEscucharAlerta}
+                  >
+                    <IconVolume2 size={16} />
+                    Modo Senior (Audio)
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="card-historial">
+          <Historial reportes={reportes} />
+        </div>
+      </div>
+    </div>
   );
 }
 

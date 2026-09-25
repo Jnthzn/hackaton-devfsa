@@ -1,9 +1,10 @@
 import "./Historial.css";
+import { IconShieldCheck, IconAlertTriangle, IconAlertOctagon } from "./icons";
 
 const ETIQUETAS = {
-  verde: "✅ Seguro",
-  amarillo: "⚠️ Sospechoso",
-  rojo: "🚨 Peligro",
+  verde: { texto: "Seguro", Icon: IconShieldCheck },
+  amarillo: { texto: "Sospechoso", Icon: IconAlertTriangle },
+  rojo: { texto: "Peligro", Icon: IconAlertOctagon },
 };
 
 function formatearFecha(iso) {
@@ -25,23 +26,31 @@ function Historial({ reportes }) {
         </p>
       ) : (
         <ul>
-          {reportes.map((r, i) => (
-            <li
-              key={r._id ?? i}
-              className={`historial-item historial-${r.nivel}`}
-            >
-              <div className="historial-top">
-                <span className="historial-etiqueta">
-                  {ETIQUETAS[r.nivel] ?? r.nivel}
-                </span>
-                <span className="historial-puntaje">{r.puntaje}/100</span>
-                <time dateTime={r.createdAt}>
-                  {formatearFecha(r.createdAt)}
-                </time>
-              </div>
-              <p className="historial-texto">{r.contenido}</p>
-            </li>
-          ))}
+          {reportes.map((r, i) => {
+            const etiqueta = ETIQUETAS[r.nivel] ?? {
+              texto: r.nivel,
+              Icon: IconAlertTriangle,
+            };
+            const EtiquetaIcon = etiqueta.Icon;
+            return (
+              <li
+                key={r._id ?? i}
+                className={`historial-item historial-${r.nivel}`}
+              >
+                <div className="historial-top">
+                  <span className="historial-etiqueta">
+                    <EtiquetaIcon size={14} />
+                    {etiqueta.texto}
+                  </span>
+                  <span className="historial-puntaje">{r.puntaje}/100</span>
+                  <time dateTime={r.createdAt}>
+                    {formatearFecha(r.createdAt)}
+                  </time>
+                </div>
+                <p className="historial-texto">{r.contenido}</p>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

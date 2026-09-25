@@ -1,78 +1,49 @@
-import { useState } from "react";
+import {
+  IconShieldCheck,
+  IconAlertTriangle,
+  IconAlertOctagon,
+  IconAlertCircle,
+  ICONOS_MOTIVO,
+} from "./icons";
 import "./MedidorRiesgo.css";
 
 const NIVELES = {
   verde: {
-    emoji: "✅",
+    Icon: IconShieldCheck,
     titulo: "Seguro",
     frase: "No detectamos señales de riesgo",
   },
   amarillo: {
-    emoji: "⚠️",
+    Icon: IconAlertTriangle,
     titulo: "Sospechoso",
     frase: "Tené cuidado con este contenido",
   },
   rojo: {
-    emoji: "🚨",
+    Icon: IconAlertOctagon,
     titulo: "Peligro",
     frase: "Es muy probable que sea una estafa",
   },
 };
 
-const ICONOS = {
-  urgencia: "⏰",
-  datos: "🔑",
-  suplantacion: "🎭",
-  pago: "💸",
-  oferta: "🎁",
-  url: "🔗",
-  combinacion: "⚠️",
-  nombre: "📛",
-  ejecutable: "💣",
-  contenido: "🧩",
-  macros: "⚙️",
-  ia: "🤖",
-  edicion: "🖌️",
-  metadatos: "🗂️",
-  medidas: "📐",
-};
-
-function armarResumen({ nivel, puntaje, motivos = [], recomendacion }) {
-  const lineas = [
-    `⚠️ Alerta de posible estafa (riesgo ${nivel.toUpperCase()}, ${puntaje}/100)`,
-  ];
-  if (motivos.length > 0) {
-    lineas.push("");
-    motivos.forEach((m) => lineas.push(`• ${m.detalle}`));
-  }
-  lineas.push("", recomendacion);
-  return lineas.join("\n");
-}
-
 function MedidorRiesgo({ resultado }) {
-  const [copiado, setCopiado] = useState(false);
-
-  if (!resultado) return null;
-
-  const { nivel, puntaje, motivos = [], recomendacion, consejos = [] } =
-    resultado;
-  const info = NIVELES[nivel] ?? NIVELES.amarillo;
-
-  const compartir = () => {
-    const resumen = armarResumen(resultado);
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(resumen)}`,
-      "_blank",
-      "noopener"
+  if (!resultado) {
+    return (
+      <section className="medidor medidor-vacio">
+        <IconShieldCheck size={32} />
+        <p>Pegá un mensaje o enlace para ver el resultado acá.</p>
+      </section>
     );
-    navigator.clipboard
-      ?.writeText(resumen)
-      .then(() => {
-        setCopiado(true);
-        setTimeout(() => setCopiado(false), 2500);
-      })
-      .catch(() => {});
-  };
+  }
+
+  const {
+    nivel,
+    puntaje,
+    motivos = [],
+    recomendacion,
+    consejos = [],
+  } = resultado;
+  const info = NIVELES[nivel] ?? NIVELES.amarillo;
+  const NivelIcon = info.Icon;
 
   return (
     <section className={`medidor medidor-${nivel}`}>
@@ -83,25 +54,29 @@ function MedidorRiesgo({ resultado }) {
             <span>de 100</span>
           </div>
         </div>
-        <div>
+        <div className="medidor-veredicto">
           <h2>
-            {info.emoji} {info.titulo}
+            <NivelIcon size={20} />
+            {info.titulo}
           </h2>
           <p className="frase">{resultado.veredicto ?? info.frase}</p>
         </div>
       </div>
 
-      <h3>¿Por qué?</h3>
+      <h3>Por qué</h3>
       {motivos.length > 0 ? (
         <ul className="motivos">
-          {motivos.map((m, i) => (
-            <li key={i}>
-              <span className="motivo-icono" aria-hidden="true">
-                {ICONOS[m.categoria] ?? "❗"}
-              </span>
-              <span>{m.detalle}</span>
-            </li>
-          ))}
+          {motivos.map((m, i) => {
+            const MotivoIcon = ICONOS_MOTIVO[m.categoria] ?? IconAlertCircle;
+            return (
+              <li key={i}>
+                <span className="motivo-icono" aria-hidden="true">
+                  <MotivoIcon size={16} />
+                </span>
+                <span>{m.detalle}</span>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <p className="sin-motivos">
@@ -123,17 +98,6 @@ function MedidorRiesgo({ resultado }) {
             ))}
           </ul>
         </div>
-      )}
-
-      {nivel !== "verde" && (
-        <>
-          <button type="button" className="btn-compartir" onClick={compartir}>
-            📲 Compartir alerta por WhatsApp
-          </button>
-          {copiado && (
-            <p className="copiado">¡Resumen copiado al portapapeles!</p>
-          )}
-        </>
       )}
     </section>
   );

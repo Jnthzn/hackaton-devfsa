@@ -1,136 +1,181 @@
 .medidor {
-  --color: #a16207;
-  --fondo: #fef9c3;
-  margin-top: 24px;
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--fondo);
-  border: 3px solid var(--color);
-  font-size: 1.125rem;
-  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
 }
 
-.medidor-verde {
-  --color: #15803d;
-  --fondo: #dcfce7;
+.medidor-vacio {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  color: var(--text-suave);
+  padding: 40px 20px;
 }
 
-.medidor-amarillo {
-  --color: #a16207;
-  --fondo: #fef9c3;
+.medidor-vacio svg {
+  color: var(--line-strong);
 }
 
-.medidor-rojo {
-  --color: #b91c1c;
-  --fondo: #fee2e2;
+.medidor-vacio p {
+  margin: 0;
+  font-size: 0.9rem;
+  max-width: 220px;
 }
 
 .medidor-cabecera {
   display: flex;
   align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 18px;
 }
 
 .puntaje-circulo {
-  width: 120px;
-  height: 120px;
+  --track: var(--line);
+  --pct: 0%;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
-  background: conic-gradient(var(--color) var(--pct), #ffffff99 0);
-  display: grid;
-  place-items: center;
   flex-shrink: 0;
+  background: conic-gradient(var(--color-nivel) var(--pct), var(--track) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
 }
 
 .puntaje-interior {
-  width: 92px;
-  height: 92px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  background: #fff;
+  background: var(--card);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  line-height: 1.1;
 }
 
 .puntaje-interior strong {
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--color);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .puntaje-interior span {
-  font-size: 0.8rem;
-  color: #555;
+  font-size: 0.68rem;
+  color: var(--text-suave);
 }
 
-.medidor h2 {
+.medidor-veredicto h2 {
   margin: 0;
-  font-size: 2rem;
-  color: var(--color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-nivel);
 }
 
-.medidor .frase {
+.medidor-veredicto .frase {
   margin: 4px 0 0;
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secundario);
 }
 
 .medidor h3 {
-  margin: 20px 0 8px;
-  font-size: 1.2rem;
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .motivos {
   list-style: none;
-  padding: 0;
   margin: 0;
-  display: grid;
-  gap: 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .motivos li {
   display: flex;
-  gap: 12px;
   align-items: flex-start;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
+  gap: 9px;
+  background: var(--bg-nivel);
+  border: 1px solid var(--borde-nivel);
+  border-radius: var(--radio-chico);
+  padding: 9px 11px;
+  font-size: 0.88rem;
+  color: var(--text);
 }
 
 .motivo-icono {
-  font-size: 1.5rem;
+  flex-shrink: 0;
+  color: var(--color-nivel);
+  margin-top: 1px;
 }
 
 .sin-motivos {
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
   margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-secundario);
 }
 
 .recomendacion {
-  margin-top: 16px;
-  padding: 16px;
-  background: var(--color);
-  color: #fff;
-  border-radius: 12px;
+  background: var(--paper);
+  border-radius: var(--radio-chico);
+  padding: 12px 14px;
 }
 
 .recomendacion strong {
   display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   margin-bottom: 4px;
 }
 
 .recomendacion p {
   margin: 0;
-  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.5;
 }
 
 .consejos ul {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .consejos li {
-  margin-bottom: 6px;
+  font-size: 0.86rem;
+  color: var(--text-secundario);
+  line-height: 1.5;
+}
+
+.medidor-verde {
+  --color-nivel: var(--seguro);
+  --bg-nivel: var(--seguro-bg);
+  --borde-nivel: var(--seguro-borde);
+}
+
+.medidor-amarillo {
+  --color-nivel: var(--sospechoso);
+  --bg-nivel: var(--sospechoso-bg);
+  --borde-nivel: var(--sospechoso-borde);
+}
+
+.medidor-rojo {
+  --color-nivel: var(--peligro);
+  --bg-nivel: var(--peligro-bg);
+  --borde-nivel: var(--peligro-borde);
 }
