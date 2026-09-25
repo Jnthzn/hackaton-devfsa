@@ -36,6 +36,35 @@ const DATOS_SENSIBLES = [
   "selfie con el dni",
 ];
 
+// Llamados a la acción (CTA): verbos y frases típicas que inducen a operar
+const LLAMADO_ACCION = [
+  "ingresa aqui",
+  "ingrese aqui",
+  "haz clic",
+  "haga clic",
+  "ingresa al enlace",
+  "ingrese al enlace",
+  "valida tus datos",
+  "validar tus datos",
+  "valida sus datos",
+  "validar sus datos",
+  "verifica tu cuenta",
+  "verificar tu cuenta",
+  "verifica su cuenta",
+  "verificar su cuenta",
+  "confirma tus datos",
+  "confirmar tus datos",
+  "actualiza tus datos",
+  "accede desde",
+  "acceda desde",
+  "restablece tu clave",
+  "restablecer contrasena",
+  "desbloquear cuenta",
+  "restaurar acceso",
+  "evitar la suspension",
+  "evita el bloqueo",
+];
+
 // Suplantación de identidad: "hola mamá", falso soporte, falso agente oficial
 const SUPLANTACION = [
   "hola mama",
@@ -132,7 +161,7 @@ const TLDS_SOSPECHOSOS = [
   "gq",
   "buzz",
 ];
-// Marcas frecuentes en estafas y sus dominios oficiales. Agregá las que quieras.
+
 const MARCAS = {
   mercadolibre: ["mercadolibre.com", "mercadolibre.com.ar"],
   mercadopago: ["mercadopago.com", "mercadopago.com.ar"],
@@ -157,7 +186,6 @@ const MARCAS = {
   netflix: ["netflix.com"],
 };
 
-// Rutas típicas de páginas falsas de login
 const RUTAS_SOSPECHOSAS = [
   "login",
   "ingresar",
@@ -175,6 +203,7 @@ const RUTAS_SOSPECHOSAS = [
 const PESO = {
   urgencia: 10,
   dato: 15,
+  accion: 15,
   acortador: 20,
   tld: 15,
   leet: 20,
@@ -188,12 +217,14 @@ const PESO = {
   suplantacion: 25,
   pago: 15,
   oferta: 10,
-  codigo: 35, // pedir el código de verificación es de las señales más fuertes
+  codigo: 35,
   estilo: 5,
 };
+
 const TOPE = {
   urgencia: 30,
   dato: 45,
+  accion: 30,
   url: 60,
   suplantacion: 50,
   pago: 30,
@@ -201,36 +232,16 @@ const TOPE = {
   estilo: 10,
 };
 
-// Combinaciones que, juntas, arman el guion clásico de una estafa
 const BONUS_COMBINACION = 10;
 const TOPE_BONUS = 20;
-const COMBINACIONES = [
-  {
-    partes: ["urgencia", "datos"],
-    detalle:
-      "Combina presión de tiempo con pedido de datos: patrón típico de estafa",
-  },
-  {
-    partes: ["suplantacion", "datos"],
-    detalle:
-      "Dice ser alguien conocido u oficial y además pide datos privados",
-  },
-  {
-    partes: ["suplantacion", "pago"],
-    detalle:
-      "Dice ser alguien conocido u oficial y pide un pago difícil de recuperar",
-  },
-  {
-    partes: ["oferta", "pago"],
-    detalle: "Promete una ganancia fácil pero primero te pide pagar",
-  },
-];
 
 const CONSEJOS = {
   urgencia:
     "Los estafadores generan presión para que no pienses. Frená y verificá antes de actuar.",
   datos:
     "Ningún banco ni servicio serio te pedirá clave, token o CBU por mensaje.",
+  accion:
+    "Desconfiá de enlaces que te insten a 'validar datos' o 'ingresar' de forma imprevista.",
   url: "No toques enlaces sospechosos: escribí vos la dirección oficial en el navegador.",
   suplantacion:
     "Si alguien dice ser un familiar o el banco, cortá y llamá vos al número que ya tenías guardado.",
@@ -293,7 +304,7 @@ const extraerUrls = (texto) =>
 
 // ----- Análisis de una URL -----
 function analizarUrl(raw) {
-  const hallazgos = []; // { detalle, puntos }
+  const hallazgos = [];
   let url;
   try {
     url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
@@ -331,7 +342,6 @@ function analizarUrl(raw) {
     });
   }
 
-  // Se quitan guiones y puntos para que "mercado-pago.seguro.com" también coincida
   const hostLeet = deLeet(host).replace(/[^a-z0-9]/g, "");
   for (const [marca, oficiales] of Object.entries(MARCAS)) {
     const esOficial = oficiales.some(
@@ -403,7 +413,18 @@ function analizar(contenido) {
     });
   }
 
-  // 2) Datos sensibles
+  // 2) Llamados a la acción (CTA)
+  const cta = buscarTerminos(texto, LLAMADO_ACCION);
+  const ptsAccion = Math.min(cta.length * PESO.accion, TOPE.accion);
+  if (cta.length) {
+    categorias.add("accion");
+    motivos.push({
+      categoria: "accion",
+      detalle: `Incita a ingresar o validar datos: ${cta.join(", ")}`,
+    });
+  }
+
+  // 3) Datos sensibles
   const datos = buscarTerminos(texto, DATOS_SENSIBLES);
   let ptsDatos = Math.min(datos.length * PESO.dato, TOPE.dato);
   if (datos.length) {
@@ -413,7 +434,7 @@ function analizar(contenido) {
       detalle: `Menciona datos sensibles: ${datos.join(", ")}`,
     });
   }
-  // Pedido del código de verificación: no siempre aparece una palabra de la lista
+
   if (PEDIDO_DE_CODIGO.test(texto) || CODIGO_NUMERICO.test(texto)) {
     ptsDatos = Math.min(ptsDatos + PESO.codigo, TOPE.dato);
     categorias.add("datos");
@@ -424,7 +445,7 @@ function analizar(contenido) {
     });
   }
 
-  // 3) Suplantación de identidad (familiar, banco, soporte)
+  // 4) Suplantación de identidad
   const supl = buscarTerminos(texto, SUPLANTACION);
   const ptsSuplantacion = Math.min(
     supl.length * PESO.suplantacion,
@@ -438,7 +459,7 @@ function analizar(contenido) {
     });
   }
 
-  // 4) Pagos difíciles de recuperar
+  // 5) Pagos difíciles de recuperar
   const pagos = buscarTerminos(texto, PAGO_IRREVERSIBLE);
   const ptsPago = Math.min(pagos.length * PESO.pago, TOPE.pago);
   if (pagos.length) {
@@ -449,7 +470,7 @@ function analizar(contenido) {
     });
   }
 
-  // 5) Ofertas demasiado buenas
+  // 6) Ofertas demasiado buenas
   const ofertas = buscarTerminos(texto, OFERTA_INCREIBLE);
   const ptsOferta = Math.min(ofertas.length * PESO.oferta, TOPE.oferta);
   if (ofertas.length) {
@@ -460,7 +481,7 @@ function analizar(contenido) {
     });
   }
 
-  // 6) URLs
+  // 7) URLs
   const urls = extraerUrls(contenido);
   let ptsUrl = 0;
   for (const u of urls) {
@@ -472,7 +493,7 @@ function analizar(contenido) {
   }
   ptsUrl = Math.min(ptsUrl, TOPE.url);
 
-  // 7) Señales de estilo: gritos y signos repetidos para meter presión
+  // 8) Señales de estilo
   let ptsEstilo = 0;
   const letras = contenido.replace(/[^a-zA-ZÀ-ÿ]/g, "");
   const mayusculas = contenido.replace(/[^A-ZÁÉÍÓÚÑ]/g, "");
@@ -489,25 +510,26 @@ function analizar(contenido) {
     categorias.add("urgencia");
     motivos.push({
       categoria: "urgencia",
-      detalle: "Abusa de signos de exclamación o pregunta para llamar la atención",
+      detalle:
+        "Abusa de signos de exclamación o pregunta para llamar la atención",
     });
   }
   ptsEstilo = Math.min(ptsEstilo, TOPE.estilo);
 
-  // 8) Combinaciones clásicas
+  // 9) Combinación de múltiples señales (2 o más categorías)
   let bonus = 0;
-  for (const combo of COMBINACIONES) {
-    if (bonus >= TOPE_BONUS) break;
-    if (combo.partes.every((p) => categorias.has(p))) {
-      bonus += BONUS_COMBINACION;
-      motivos.push({ categoria: "combinacion", detalle: combo.detalle });
-    }
+  if (categorias.size >= 2) {
+    bonus = Math.min(categorias.size * BONUS_COMBINACION, TOPE_BONUS);
+    motivos.push({
+      categoria: "combinacion",
+      detalle: `Combina múltiples factores de riesgo (${categorias.size} señales sospechosas al mismo tiempo)`,
+    });
   }
-  bonus = Math.min(bonus, TOPE_BONUS);
 
   const puntaje = Math.min(
     100,
     ptsUrgencia +
+      ptsAccion +
       ptsDatos +
       ptsSuplantacion +
       ptsPago +
@@ -532,7 +554,6 @@ function analizar(contenido) {
   };
 }
 
-// Oculta emails y números largos (CBU, teléfonos, tarjetas) antes de guardar
 const anonimizar = (t) =>
   t
     .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, "[email]")

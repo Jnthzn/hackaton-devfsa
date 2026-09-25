@@ -18,7 +18,7 @@ function formatearFecha(iso) {
 function Historial({ reportes }) {
   return (
     <section className="historial">
-      <h2>Últimos análisis de la comunidad</h2>
+      <h2>Historial de análisis</h2>
 
       {reportes.length === 0 ? (
         <p className="historial-vacio">
