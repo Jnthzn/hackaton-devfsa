@@ -1,9 +1,6 @@
 import { analizar, anonimizar } from "../services/analisisService.js";
-import {
-  guardar,
-  listar,
-  estadisticas,
-} from "../services/reportesStore.js";
+import { obtenerUrlReal } from "../utils/desenmascarar.js";
+import { guardar, listar, estadisticas } from "../services/reportesStore.js";
 
 // POST /api/analisis  body: { "contenido": "texto o link a analizar" }
 const analizarContenido = async (req, res, next) => {
@@ -21,7 +18,20 @@ const analizarContenido = async (req, res, next) => {
       });
     }
 
+    // Detectar si hay un link http/https y desenmascararlo
+    let urlReal = null;
+    const matchUrl = contenido.match(/(https?:\/\/[^\s]+)/i);
+    if (matchUrl) {
+      urlReal = await obtenerUrlReal(matchUrl[0]);
+    }
+
     const resultado = analizar(contenido);
+
+    // Si la URL redirige a otro sitio, la sumamos al resultado
+    if (urlReal && urlReal !== matchUrl[0]) {
+      resultado.urlOriginal = matchUrl[0];
+      resultado.urlReal = urlReal;
+    }
 
     await guardar({
       tipo: resultado.tipo,
